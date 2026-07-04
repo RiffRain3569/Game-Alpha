@@ -27,6 +27,16 @@ func _physics_process(_delta: float) -> void:
 			targets.append(node as Node2D)
 	_vision_cone.detect(targets)
 
+	for result in _vision_cone.get_last_results():
+		if result.target:
+			match result.level:
+				DetectionResult.Level.FULL:
+					result.target.modulate.a = 1.0
+				DetectionResult.Level.PARTIAL:
+					result.target.modulate.a = 0.5
+				DetectionResult.Level.NONE:
+					result.target.modulate.a = 0.2
+
 
 func _draw() -> void:
 	_vision_cone.draw_debug(self)

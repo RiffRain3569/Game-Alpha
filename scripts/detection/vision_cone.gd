@@ -82,20 +82,43 @@ func get_last_results() -> Array[DetectionResult]:
 
 
 func draw_debug(canvas: CanvasItem) -> void:
-	_draw_cone_polygon(canvas, peripheral_cone_angle_deg, vision_range, peripheral_color)
-	_draw_cone_polygon(canvas, center_cone_angle_deg, vision_range, center_color)
+	_draw_cone_with_walls(canvas, peripheral_cone_angle_deg, vision_range, peripheral_color)
+	_draw_cone_with_walls(canvas, center_cone_angle_deg, vision_range, center_color)
 	_draw_detection_lines(canvas)
 
 
-func _draw_cone_polygon(canvas: CanvasItem, angle_deg: float, radius: float, color: Color) -> void:
+func _draw_cone_with_walls(canvas: CanvasItem, angle_deg: float, radius: float, color: Color) -> void:
 	var half_angle: float = deg_to_rad(angle_deg) * 0.5
-	var segment_count: int = 32
+	var segment_count: int = 48
 	var points := PackedVector2Array()
 	points.append(Vector2.ZERO)
+
+	var space_state := get_world_2d().direct_space_state
+	var origin: Vector2 = global_position
+
+	var exclude_rids: Array[RID] = []
+	var parent_body := get_parent() as PhysicsBody2D
+	if parent_body:
+		exclude_rids.append(parent_body.get_rid())
+
 	for i in range(segment_count + 1):
 		var t: float = float(i) / float(segment_count)
 		var angle: float = -half_angle + t * half_angle * 2.0
-		points.append(Vector2(cos(angle), sin(angle)) * radius)
+		var dir := Vector2(cos(angle), sin(angle))
+		var end_point: Vector2 = dir * radius
+
+		var world_end: Vector2 = origin + dir.rotated(global_rotation) * radius
+		var query := PhysicsRayQueryParameters2D.create(origin, world_end)
+		query.collision_mask = wall_mask
+		query.exclude = exclude_rids
+
+		var hit: Dictionary = space_state.intersect_ray(query)
+		if not hit.is_empty():
+			var hit_dist: float = (hit.position - origin).length()
+			end_point = dir * hit_dist
+
+		points.append(end_point)
+
 	canvas.draw_colored_polygon(points, color)
 
 
