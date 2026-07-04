@@ -1,0 +1,19 @@
+# Godot 4.x
+.godot/
+*.translation
+
+# Export
+export/
+*.pck
+*.zip
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+*.swp
+*.swo
+
+CLAUDE.md
