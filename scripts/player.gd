@@ -2,6 +2,8 @@ extends CharacterBody2D
 
 @export_group("Movement")
 @export var move_speed: float = 300.0
+@export var backward_multiplier: float = 0.5
+@export var strafe_multiplier: float = 0.7
 @export var sprint_multiplier: float = 1.8
 
 @export_group("Rotation")
@@ -65,6 +67,16 @@ func _physics_process(delta: float) -> void:
 		_stamina_delay_timer = 0.0
 
 	var speed := move_speed
+	if input_direction != Vector2.ZERO:
+		var facing := Vector2.RIGHT.rotated(rotation)
+		var dot := facing.dot(input_direction.normalized())
+		# dot=1: forward, dot=-1: backward, dot=0: strafe
+		var dir_mult: float
+		if dot >= 0.0:
+			dir_mult = lerpf(strafe_multiplier, 1.0, dot)
+		else:
+			dir_mult = lerpf(strafe_multiplier, backward_multiplier, -dot)
+		speed *= dir_mult
 	if is_sprinting:
 		speed *= sprint_multiplier
 
