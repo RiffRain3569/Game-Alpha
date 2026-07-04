@@ -33,6 +33,7 @@ var _target_rotation: float = 0.0
 var _stamina: float = 100.0
 var _hit_recovery_timer: float = 0.0
 var _stamina_delay_timer: float = 0.0
+var _knockback_velocity: Vector2 = Vector2.ZERO
 
 @onready var _vision_cone: VisionCone = $VisionCone
 
@@ -44,6 +45,14 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# Knockback
+	if _knockback_velocity.length() > 5.0:
+		velocity = _knockback_velocity
+		_knockback_velocity = _knockback_velocity.lerp(Vector2.ZERO, 10.0 * delta)
+		move_and_slide()
+		return
+	_knockback_velocity = Vector2.ZERO
+
 	input_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 
 	# Stamina sprint
@@ -119,8 +128,10 @@ func _physics_process(delta: float) -> void:
 					result.target.modulate.a = 0.2
 
 
-func take_damage(amount: float, _from_pos: Vector2) -> void:
+func take_damage(_amount: float, from_pos: Vector2) -> void:
 	_hit_recovery_timer = hit_recovery_duration
+	var knockback_dir := (global_position - from_pos).normalized()
+	_knockback_velocity = knockback_dir * (attack_range * 0.8 * 10.0)
 
 
 func _perform_attack() -> void:

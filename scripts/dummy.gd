@@ -36,6 +36,8 @@ var _cooldown_remaining: float = 0.0
 var _swing_timer: float = 0.0
 var _swing_progress: float = 0.0
 var _target_rotation: float = 0.0
+var _knockback_velocity: Vector2 = Vector2.ZERO
+var _alert_timer: float = 0.0
 
 
 func _ready() -> void:
@@ -55,13 +57,32 @@ func _physics_process(delta: float) -> void:
 		_swing_timer -= delta
 		_swing_progress = 1.0 - (_swing_timer / ai_swing_duration)
 
+	# Knockback decay (rotate toward target while knocked back)
+	if _knockback_velocity.length() > 5.0:
+		velocity = _knockback_velocity
+		_knockback_velocity = _knockback_velocity.lerp(Vector2.ZERO, 10.0 * delta)
+		if _target:
+			var to_target := (_target.global_position - global_position).angle()
+			var angle_diff := wrapf(to_target - rotation, -PI, PI)
+			var rot_speed := 18.0 if _alert_timer > 0.0 else 6.0
+			rotation += clampf(angle_diff, -rot_speed * delta, rot_speed * delta)
+		move_and_slide()
+		return
+
+	_knockback_velocity = Vector2.ZERO
+
 	if not ai_enabled:
 		return
 
-	_detect_player()
+	if _alert_timer > 0.0:
+		_alert_timer -= delta
+	else:
+		_detect_player()
 
 	if _target and _reaction_timer > 0.0:
 		_reaction_timer -= delta
+		velocity = Vector2.ZERO
+		move_and_slide()
 		return
 
 	if _target:
@@ -114,9 +135,10 @@ func _chase_and_attack(delta: float) -> void:
 	# Aim error
 	desired_angle += deg_to_rad(randf_range(-ai_aim_error_deg, ai_aim_error_deg))
 
-	# Rotate toward target
+	# Rotate toward target (faster when alert from hit)
 	var angle_diff := wrapf(desired_angle - rotation, -PI, PI)
-	var max_rotate := 6.0 * delta
+	var rot_speed := 18.0 if _alert_timer > 0.0 else 6.0
+	var max_rotate := rot_speed * delta
 	rotation += clampf(angle_diff, -max_rotate, max_rotate)
 
 	# Move toward target
@@ -171,7 +193,7 @@ func _perform_attack() -> void:
 		player.take_damage(damage, global_position)
 
 
-func take_damage(amount: float, _from_pos: Vector2) -> void:
+func take_damage(amount: float, from_pos: Vector2) -> void:
 	health -= amount
 	_damage_popups.append({
 		"value": amount,
@@ -180,10 +202,21 @@ func take_damage(amount: float, _from_pos: Vector2) -> void:
 	})
 	queue_redraw()
 
+	# Knockback (80% of attack range)
+	var knockback_dir := (global_position - from_pos).normalized()
+	_knockback_velocity = knockback_dir * (ai_attack_range * 0.8 * 10.0)
+
+	# Alert on hit - know attacker, rotate faster temporarily
+	var player := get_tree().get_first_node_in_group("player")
+	if player:
+		_target = player
+		_reaction_timer = 0.0
+		_alert_timer = 3.0
+
 	if health <= 0.0:
 		health = 0.0
 		_is_down = true
-		velocity = Vector2.ZERO
+		_knockback_velocity = Vector2.ZERO
 
 
 func _process(delta: float) -> void:
