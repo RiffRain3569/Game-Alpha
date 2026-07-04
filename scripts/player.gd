@@ -40,6 +40,7 @@ var _stamina_delay_timer: float = 0.0
 func _ready() -> void:
 	_stamina = stamina_max
 	_target_rotation = rotation
+	add_to_group("player")
 
 
 func _physics_process(delta: float) -> void:
