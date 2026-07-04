@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://main_scene"]
+[gd_scene load_steps=5 format=3 uid="uid://main_scene"]
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/dummy.tscn" id="2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h"]
 size = Vector2(400, 40)
@@ -67,9 +68,15 @@ offset_right = 20.0
 offset_bottom = 150.0
 color = Color(0.4, 0.4, 0.4, 1)
 
+[node name="Targets" type="Node2D" parent="."]
+
+[node name="Dummy1" parent="Targets" instance=ExtResource("2")]
+position = Vector2(900, 300)
+
 [node name="DebugUI" type="CanvasLayer" parent="."]
 
 [node name="Label" type="Label" parent="DebugUI"]
-offset_right = 300.0
+offset_right = 400.0
 offset_bottom = 60.0
-text = "WASD: 이동 | Shift: 스프린트 | 마우스: 방향"
+text = "WASD: 이동 | Shift: 스프린트 | 마우스: 방향
+빨간 연결선=완전탐지 | 파란 연결선=부분탐지"
