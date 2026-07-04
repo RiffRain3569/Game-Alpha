@@ -5,14 +5,18 @@ extends CharacterBody2D
 @export var sprint_multiplier: float = 1.8
 
 @export_group("Melee Attack")
-@export var attack_range: float = 60.0
+@export var attack_range: float = 140.0
+@export var attack_arc_deg: float = 90.0
 @export var attack_cooldown: float = 3.0
+@export var swing_duration: float = 0.1
 @export var damage_back: float = 50.0
 @export var damage_side: float = 30.0
 @export var damage_front: float = 17.5
 
 var input_direction: Vector2 = Vector2.ZERO
 var _cooldown_remaining: float = 0.0
+var _swing_timer: float = 0.0
+var _swing_progress: float = 0.0
 
 @onready var _vision_cone: VisionCone = $VisionCone
 
@@ -32,6 +36,10 @@ func _physics_process(delta: float) -> void:
 
 	if _cooldown_remaining > 0.0:
 		_cooldown_remaining -= delta
+
+	if _swing_timer > 0.0:
+		_swing_timer -= delta
+		_swing_progress = 1.0 - (_swing_timer / swing_duration)
 
 	if Input.is_action_just_pressed("attack") and _cooldown_remaining <= 0.0:
 		_perform_attack()
@@ -55,6 +63,10 @@ func _physics_process(delta: float) -> void:
 
 func _perform_attack() -> void:
 	_cooldown_remaining = attack_cooldown
+	_swing_timer = swing_duration
+	_swing_progress = 0.0
+
+	var half_arc := deg_to_rad(attack_arc_deg) * 0.5
 
 	for node in get_tree().get_nodes_in_group("targets"):
 		if node == self or not node is Node2D:
@@ -65,7 +77,7 @@ func _perform_attack() -> void:
 			continue
 
 		var attack_angle_diff := absf(wrapf(to_target.angle() - rotation, -PI, PI))
-		if attack_angle_diff > deg_to_rad(30.0):
+		if attack_angle_diff > half_arc:
 			continue
 
 		var damage := _calc_angle_damage(node)
@@ -94,10 +106,21 @@ func _draw() -> void:
 		draw_line(Vector2.ZERO, input_direction.rotated(-rotation) * 50.0, Color.YELLOW, 2.0)
 	draw_line(Vector2.ZERO, Vector2(60, 0), Color.RED, 1.5)
 
-	# 각목 히트박스 (쿨��운 직후 잠깐 표시)
-	if _cooldown_remaining > attack_cooldown - 0.15:
-		var hit_end := Vector2(attack_range, 0)
-		draw_line(Vector2.ZERO, hit_end, Color.WHITE, 4.0)
+	# Swing animation
+	if _swing_timer > 0.0:
+		var half_arc := deg_to_rad(attack_arc_deg) * 0.5
+		var swing_angle := lerpf(-half_arc, half_arc, _swing_progress)
+		var arc_points := PackedVector2Array()
+		arc_points.append(Vector2.ZERO)
+		var segments := 12
+		for i in range(segments + 1):
+			var t_arc := float(i) / float(segments)
+			var a := lerpf(-half_arc, swing_angle, t_arc)
+			arc_points.append(Vector2(cos(a), sin(a)) * attack_range)
+		draw_colored_polygon(arc_points, Color(1.0, 1.0, 1.0, 0.3))
+		var bat_end := Vector2(cos(swing_angle), sin(swing_angle)) * attack_range
+		draw_line(Vector2.ZERO, bat_end, Color.WHITE, 3.0)
+
 
 	# 쿨다운 게이지
 	var cd_ratio := clampf(_cooldown_remaining / attack_cooldown, 0.0, 1.0)
