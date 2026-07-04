@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://main_scene"]
+[gd_scene format=3 uid="uid://cmh2eaqtlwxm1"]
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/dummy.tscn" id="2"]
+[ext_resource type="Script" path="res://scripts/ui/slider_panel.gd" id="3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h"]
 size = Vector2(400, 40)
@@ -9,74 +10,85 @@ size = Vector2(400, 40)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_v"]
 size = Vector2(40, 300)
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=2082009445]
 
-[node name="Player" parent="." instance=ExtResource("1")]
+[node name="Player" parent="." unique_id=161461025 instance=ExtResource("1")]
 position = Vector2(640, 360)
 
-[node name="Walls" type="Node2D" parent="."]
+[node name="Walls" type="Node2D" parent="." unique_id=1907862281]
 
-[node name="Wall1" type="StaticBody2D" parent="Walls"]
+[node name="Wall1" type="StaticBody2D" parent="Walls" unique_id=1233761283]
 position = Vector2(400, 150)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall1"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall1" unique_id=1541539098]
 shape = SubResource("RectangleShape2D_h")
 
-[node name="Visual" type="ColorRect" parent="Walls/Wall1"]
+[node name="Visual" type="ColorRect" parent="Walls/Wall1" unique_id=946871058]
 offset_left = -200.0
 offset_top = -20.0
 offset_right = 200.0
 offset_bottom = 20.0
 color = Color(0.4, 0.4, 0.4, 1)
 
-[node name="Wall2" type="StaticBody2D" parent="Walls"]
+[node name="Wall2" type="StaticBody2D" parent="Walls" unique_id=21780810]
 position = Vector2(800, 500)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall2"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall2" unique_id=1113550086]
 shape = SubResource("RectangleShape2D_v")
 
-[node name="Visual" type="ColorRect" parent="Walls/Wall2"]
+[node name="Visual" type="ColorRect" parent="Walls/Wall2" unique_id=438447947]
 offset_left = -20.0
 offset_top = -150.0
 offset_right = 20.0
 offset_bottom = 150.0
 color = Color(0.4, 0.4, 0.4, 1)
 
-[node name="Wall3" type="StaticBody2D" parent="Walls"]
+[node name="Wall3" type="StaticBody2D" parent="Walls" unique_id=1363370227]
 position = Vector2(300, 550)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall3"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall3" unique_id=568291131]
 shape = SubResource("RectangleShape2D_h")
 
-[node name="Visual" type="ColorRect" parent="Walls/Wall3"]
+[node name="Visual" type="ColorRect" parent="Walls/Wall3" unique_id=696362908]
 offset_left = -200.0
 offset_top = -20.0
 offset_right = 200.0
 offset_bottom = 20.0
 color = Color(0.4, 0.4, 0.4, 1)
 
-[node name="Wall4" type="StaticBody2D" parent="Walls"]
+[node name="Wall4" type="StaticBody2D" parent="Walls" unique_id=556419331]
 position = Vector2(150, 350)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall4"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall4" unique_id=1389164288]
+position = Vector2(1, 0)
 shape = SubResource("RectangleShape2D_v")
 
-[node name="Visual" type="ColorRect" parent="Walls/Wall4"]
+[node name="Visual" type="ColorRect" parent="Walls/Wall4" unique_id=584914043]
 offset_left = -20.0
 offset_top = -150.0
 offset_right = 20.0
 offset_bottom = 150.0
 color = Color(0.4, 0.4, 0.4, 1)
 
-[node name="Targets" type="Node2D" parent="."]
+[node name="Targets" type="Node2D" parent="." unique_id=1110454800]
 
-[node name="Dummy1" parent="Targets" instance=ExtResource("2")]
+[node name="Dummy1" parent="Targets" unique_id=508075843 instance=ExtResource("2")]
 position = Vector2(900, 300)
 
-[node name="DebugUI" type="CanvasLayer" parent="."]
+[node name="DebugUI" type="CanvasLayer" parent="." unique_id=1474931856]
 
-[node name="Label" type="Label" parent="DebugUI"]
-offset_right = 400.0
+[node name="Label" type="Label" parent="DebugUI" unique_id=1522660778]
+offset_left = 270.0
+offset_right = 670.0
 offset_bottom = 60.0
 text = "WASD: 이동 | Shift: 스프린트 | 마우스: 방향
 빨간 연결선=완전탐지 | 파란 연결선=부분탐지"
+
+[node name="SliderPanel" type="Control" parent="DebugUI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("3")
