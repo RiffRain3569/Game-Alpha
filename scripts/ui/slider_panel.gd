@@ -1,14 +1,14 @@
 extends Control
 
 var _player: CharacterBody2D
-var _dummy: CharacterBody2D
+var _dummies: Array[CharacterBody2D] = []
 var _vision_cone: Node2D
 var _sliders: Dictionary = {}
 var _scroll: ScrollContainer
 var _vbox: VBoxContainer
 
 var _player_start_pos: Vector2
-var _dummy_start_pos: Vector2
+var _dummy_start_positions: Array[Vector2] = []
 
 const PARAMS := [
 	["== PLAYER ==", "", "", 0, 0, 0],
@@ -48,12 +48,13 @@ const PARAMS := [
 
 func _ready() -> void:
 	_player = get_tree().get_first_node_in_group("player")
-	_dummy = get_tree().get_first_node_in_group("targets")
+	for node in get_tree().get_nodes_in_group("targets"):
+		if node is CharacterBody2D:
+			_dummies.append(node)
+			_dummy_start_positions.append(node.global_position)
 	if _player:
 		_vision_cone = _player.get_node("VisionCone")
 		_player_start_pos = _player.global_position
-	if _dummy:
-		_dummy_start_pos = _dummy.global_position
 
 	_build_ui()
 
@@ -129,22 +130,23 @@ func _on_slider_changed(value: float, key: String) -> void:
 	var data: Dictionary = _sliders[key]
 	data.label.text = "%s: %.1f" % [data.name, value]
 
-	var target_node: Node = null
-	match data.target:
-		"player":
-			target_node = _player
-		"dummy":
-			target_node = _dummy
-		"vision":
-			target_node = _vision_cone
-
-	if target_node == null:
-		return
-
 	var prop: String = data.prop
-	if prop == "ai_enabled":
-		target_node.set(prop, value > 0.5)
+
+	if data.target == "dummy":
+		for dummy in _dummies:
+			if prop == "ai_enabled":
+				dummy.set(prop, value > 0.5)
+			else:
+				dummy.set(prop, value)
 	else:
+		var target_node: Node = null
+		match data.target:
+			"player":
+				target_node = _player
+			"vision":
+				target_node = _vision_cone
+		if target_node == null:
+			return
 		target_node.set(prop, value)
 
 
@@ -154,13 +156,14 @@ func _on_reset() -> void:
 		_player.set("_stamina", _player.get("stamina_max"))
 		_player.set("_cooldown_remaining", 0.0)
 		_player.set("_knockback_velocity", Vector2.ZERO)
-	if _dummy:
-		_dummy.global_position = _dummy_start_pos
-		_dummy.set("health", _dummy.get("max_health"))
-		_dummy.set("_is_down", false)
-		_dummy.set("_target", null)
-		_dummy.set("_cooldown_remaining", 0.0)
-		_dummy.set("_knockback_velocity", Vector2.ZERO)
-		_dummy.set("_alert_timer", 0.0)
-		_dummy.modulate = Color.WHITE
-		_dummy.queue_redraw()
+	for i in range(_dummies.size()):
+		var dummy := _dummies[i]
+		dummy.global_position = _dummy_start_positions[i]
+		dummy.set("health", dummy.get("max_health"))
+		dummy.set("_is_down", false)
+		dummy.set("_target", null)
+		dummy.set("_cooldown_remaining", 0.0)
+		dummy.set("_knockback_velocity", Vector2.ZERO)
+		dummy.set("_alert_timer", 0.0)
+		dummy.modulate = Color.WHITE
+		dummy.queue_redraw()
