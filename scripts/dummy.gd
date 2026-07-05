@@ -26,6 +26,12 @@ extends CharacterBody2D
 @export var ai_peripheral_cone_deg: float = 120.0
 @export var ai_vision_range: float = 400.0
 
+@export_group("AI Patrol")
+@export var patrol_enabled: bool = true
+@export var patrol_radius: float = 150.0
+@export var patrol_wait_time: float = 2.0
+@export var patrol_speed: float = 80.0
+
 var health: float = 100.0
 var _damage_popups: Array[Dictionary] = []
 var _is_down: bool = false
@@ -38,12 +44,17 @@ var _swing_progress: float = 0.0
 var _target_rotation: float = 0.0
 var _knockback_velocity: Vector2 = Vector2.ZERO
 var _alert_timer: float = 0.0
+var _patrol_origin: Vector2 = Vector2.ZERO
+var _patrol_target: Vector2 = Vector2.ZERO
+var _patrol_wait_timer: float = 0.0
 
 
 func _ready() -> void:
 	add_to_group("targets")
 	health = max_health
 	_target_rotation = rotation
+	_patrol_origin = global_position
+	_pick_patrol_point()
 
 
 func _physics_process(delta: float) -> void:
@@ -88,8 +99,7 @@ func _physics_process(delta: float) -> void:
 	if _target:
 		_chase_and_attack(delta)
 	else:
-		velocity = Vector2.ZERO
-		move_and_slide()
+		_patrol(delta)
 
 
 func _detect_player() -> void:
@@ -126,6 +136,40 @@ func _detect_player() -> void:
 	if _target == null:
 		_reaction_timer = ai_reaction_delay
 	_target = player
+
+
+func _patrol(delta: float) -> void:
+	if not patrol_enabled:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
+
+	if _patrol_wait_timer > 0.0:
+		_patrol_wait_timer -= delta
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
+
+	var to_point: Vector2 = _patrol_target - global_position
+	var distance := to_point.length()
+
+	if distance < 20.0:
+		_patrol_wait_timer = patrol_wait_time
+		_pick_patrol_point()
+		return
+
+	var desired_angle := to_point.angle()
+	var angle_diff := wrapf(desired_angle - rotation, -PI, PI)
+	var max_rotate := 4.0 * delta
+	rotation += clampf(angle_diff, -max_rotate, max_rotate)
+
+	velocity = Vector2.RIGHT.rotated(rotation) * patrol_speed
+	move_and_slide()
+
+
+func _pick_patrol_point() -> void:
+	var angle := randf() * TAU
+	_patrol_target = _patrol_origin + Vector2(cos(angle), sin(angle)) * randf_range(60.0, patrol_radius)
 
 
 func _chase_and_attack(delta: float) -> void:
