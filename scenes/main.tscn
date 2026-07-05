@@ -4,229 +4,280 @@
 [ext_resource type="PackedScene" path="res://scenes/dummy.tscn" id="2"]
 [ext_resource type="Script" path="res://scripts/ui/slider_panel.gd" id="3"]
 
-[sub_resource type="RectangleShape2D" id="border_top"]
-size = Vector2(1920, 40)
+; Wall shapes
+[sub_resource type="RectangleShape2D" id="outer_h"]
+size = Vector2(1920, 30)
 
-[sub_resource type="RectangleShape2D" id="border_bottom"]
-size = Vector2(1920, 40)
+[sub_resource type="RectangleShape2D" id="outer_v"]
+size = Vector2(30, 1080)
 
-[sub_resource type="RectangleShape2D" id="border_left"]
-size = Vector2(40, 1080)
+[sub_resource type="RectangleShape2D" id="wall_long_h"]
+size = Vector2(500, 24)
 
-[sub_resource type="RectangleShape2D" id="border_right"]
-size = Vector2(40, 1080)
+[sub_resource type="RectangleShape2D" id="wall_med_h"]
+size = Vector2(300, 24)
 
-[sub_resource type="RectangleShape2D" id="center_h"]
-size = Vector2(300, 40)
+[sub_resource type="RectangleShape2D" id="wall_short_h"]
+size = Vector2(150, 24)
 
-[sub_resource type="RectangleShape2D" id="center_v"]
-size = Vector2(40, 200)
+[sub_resource type="RectangleShape2D" id="wall_long_v"]
+size = Vector2(24, 400)
+
+[sub_resource type="RectangleShape2D" id="wall_med_v"]
+size = Vector2(24, 250)
+
+[sub_resource type="RectangleShape2D" id="wall_short_v"]
+size = Vector2(24, 120)
 
 [sub_resource type="RectangleShape2D" id="pillar"]
-size = Vector2(60, 60)
-
-[sub_resource type="RectangleShape2D" id="cover_h"]
-size = Vector2(160, 30)
-
-[sub_resource type="RectangleShape2D" id="cover_v"]
-size = Vector2(30, 160)
-
-[sub_resource type="RectangleShape2D" id="corridor_v"]
-size = Vector2(30, 250)
+size = Vector2(40, 40)
 
 [node name="Main" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1")]
-position = Vector2(500, 540)
+position = Vector2(300, 540)
 
 [node name="Walls" type="Node2D" parent="."]
 
-; === Border walls ===
-[node name="BorderTop" type="StaticBody2D" parent="Walls"]
-position = Vector2(960, 20)
+; === Outer walls (building boundary) ===
+[node name="OuterTop" type="StaticBody2D" parent="Walls"]
+position = Vector2(960, 15)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BorderTop"]
-shape = SubResource("border_top")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/OuterTop"]
+shape = SubResource("outer_h")
 
-[node name="Visual" type="ColorRect" parent="Walls/BorderTop"]
+[node name="Visual" type="ColorRect" parent="Walls/OuterTop"]
 offset_left = -960.0
-offset_top = -20.0
+offset_top = -15.0
 offset_right = 960.0
-offset_bottom = 20.0
-color = Color(0.3, 0.3, 0.3, 1)
+offset_bottom = 15.0
+color = Color(0.25, 0.22, 0.2, 1)
 
-[node name="BorderBottom" type="StaticBody2D" parent="Walls"]
-position = Vector2(960, 1060)
+[node name="OuterBottom" type="StaticBody2D" parent="Walls"]
+position = Vector2(960, 1065)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BorderBottom"]
-shape = SubResource("border_bottom")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/OuterBottom"]
+shape = SubResource("outer_h")
 
-[node name="Visual" type="ColorRect" parent="Walls/BorderBottom"]
+[node name="Visual" type="ColorRect" parent="Walls/OuterBottom"]
 offset_left = -960.0
-offset_top = -20.0
+offset_top = -15.0
 offset_right = 960.0
-offset_bottom = 20.0
-color = Color(0.3, 0.3, 0.3, 1)
+offset_bottom = 15.0
+color = Color(0.25, 0.22, 0.2, 1)
 
-[node name="BorderLeft" type="StaticBody2D" parent="Walls"]
-position = Vector2(20, 540)
+[node name="OuterLeft" type="StaticBody2D" parent="Walls"]
+position = Vector2(15, 540)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BorderLeft"]
-shape = SubResource("border_left")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/OuterLeft"]
+shape = SubResource("outer_v")
 
-[node name="Visual" type="ColorRect" parent="Walls/BorderLeft"]
-offset_left = -20.0
+[node name="Visual" type="ColorRect" parent="Walls/OuterLeft"]
+offset_left = -15.0
 offset_top = -540.0
-offset_right = 20.0
+offset_right = 15.0
 offset_bottom = 540.0
-color = Color(0.3, 0.3, 0.3, 1)
+color = Color(0.25, 0.22, 0.2, 1)
 
-[node name="BorderRight" type="StaticBody2D" parent="Walls"]
-position = Vector2(1900, 540)
+[node name="OuterRight" type="StaticBody2D" parent="Walls"]
+position = Vector2(1905, 540)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BorderRight"]
-shape = SubResource("border_right")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/OuterRight"]
+shape = SubResource("outer_v")
 
-[node name="Visual" type="ColorRect" parent="Walls/BorderRight"]
-offset_left = -20.0
+[node name="Visual" type="ColorRect" parent="Walls/OuterRight"]
+offset_left = -15.0
 offset_top = -540.0
-offset_right = 20.0
+offset_right = 15.0
 offset_bottom = 540.0
-color = Color(0.3, 0.3, 0.3, 1)
+color = Color(0.25, 0.22, 0.2, 1)
 
-; === Center structure (T-shape) ===
-[node name="CenterH" type="StaticBody2D" parent="Walls"]
-position = Vector2(960, 500)
+; === Room divider: horizontal wall with door gap (top area) ===
+[node name="RoomDivH_Left" type="StaticBody2D" parent="Walls"]
+position = Vector2(350, 350)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/CenterH"]
-shape = SubResource("center_h")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RoomDivH_Left"]
+shape = SubResource("wall_med_h")
 
-[node name="Visual" type="ColorRect" parent="Walls/CenterH"]
+[node name="Visual" type="ColorRect" parent="Walls/RoomDivH_Left"]
 offset_left = -150.0
-offset_top = -20.0
+offset_top = -12.0
 offset_right = 150.0
-offset_bottom = 20.0
-color = Color(0.5, 0.5, 0.5, 1)
+offset_bottom = 12.0
+color = Color(0.35, 0.3, 0.28, 1)
 
-[node name="CenterV" type="StaticBody2D" parent="Walls"]
-position = Vector2(960, 600)
+[node name="RoomDivH_Right" type="StaticBody2D" parent="Walls"]
+position = Vector2(750, 350)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/CenterV"]
-shape = SubResource("center_v")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RoomDivH_Right"]
+shape = SubResource("wall_short_h")
 
-[node name="Visual" type="ColorRect" parent="Walls/CenterV"]
-offset_left = -20.0
-offset_top = -100.0
-offset_right = 20.0
-offset_bottom = 100.0
-color = Color(0.5, 0.5, 0.5, 1)
+[node name="Visual" type="ColorRect" parent="Walls/RoomDivH_Right"]
+offset_left = -75.0
+offset_top = -12.0
+offset_right = 75.0
+offset_bottom = 12.0
+color = Color(0.35, 0.3, 0.28, 1)
 
-; === Left corridor wall ===
-[node name="CorridorLeft" type="StaticBody2D" parent="Walls"]
-position = Vector2(350, 300)
+; === Room divider: horizontal wall (bottom area) ===
+[node name="RoomDivH2_Left" type="StaticBody2D" parent="Walls"]
+position = Vector2(250, 730)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/CorridorLeft"]
-shape = SubResource("corridor_v")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RoomDivH2_Left"]
+shape = SubResource("wall_short_h")
 
-[node name="Visual" type="ColorRect" parent="Walls/CorridorLeft"]
-offset_left = -15.0
+[node name="Visual" type="ColorRect" parent="Walls/RoomDivH2_Left"]
+offset_left = -75.0
+offset_top = -12.0
+offset_right = 75.0
+offset_bottom = 12.0
+color = Color(0.35, 0.3, 0.28, 1)
+
+[node name="RoomDivH2_Right" type="StaticBody2D" parent="Walls"]
+position = Vector2(600, 730)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RoomDivH2_Right"]
+shape = SubResource("wall_med_h")
+
+[node name="Visual" type="ColorRect" parent="Walls/RoomDivH2_Right"]
+offset_left = -150.0
+offset_top = -12.0
+offset_right = 150.0
+offset_bottom = 12.0
+color = Color(0.35, 0.3, 0.28, 1)
+
+; === Central corridor vertical wall (left side) ===
+[node name="CorridorV_Left" type="StaticBody2D" parent="Walls"]
+position = Vector2(850, 540)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/CorridorV_Left"]
+shape = SubResource("wall_long_v")
+
+[node name="Visual" type="ColorRect" parent="Walls/CorridorV_Left"]
+offset_left = -12.0
+offset_top = -200.0
+offset_right = 12.0
+offset_bottom = 200.0
+color = Color(0.35, 0.3, 0.28, 1)
+
+; === Central corridor vertical wall (right side) ===
+[node name="CorridorV_Right" type="StaticBody2D" parent="Walls"]
+position = Vector2(1100, 400)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/CorridorV_Right"]
+shape = SubResource("wall_med_v")
+
+[node name="Visual" type="ColorRect" parent="Walls/CorridorV_Right"]
+offset_left = -12.0
 offset_top = -125.0
-offset_right = 15.0
+offset_right = 12.0
 offset_bottom = 125.0
-color = Color(0.5, 0.5, 0.5, 1)
+color = Color(0.35, 0.3, 0.28, 1)
 
-; === Right corridor wall ===
-[node name="CorridorRight" type="StaticBody2D" parent="Walls"]
-position = Vector2(1550, 750)
+[node name="CorridorV_Right2" type="StaticBody2D" parent="Walls"]
+position = Vector2(1100, 800)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/CorridorRight"]
-shape = SubResource("corridor_v")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/CorridorV_Right2"]
+shape = SubResource("wall_med_v")
 
-[node name="Visual" type="ColorRect" parent="Walls/CorridorRight"]
-offset_left = -15.0
+[node name="Visual" type="ColorRect" parent="Walls/CorridorV_Right2"]
+offset_left = -12.0
 offset_top = -125.0
-offset_right = 15.0
+offset_right = 12.0
 offset_bottom = 125.0
-color = Color(0.5, 0.5, 0.5, 1)
+color = Color(0.35, 0.3, 0.28, 1)
 
-; === Cover pillars ===
+; === Right wing room walls ===
+[node name="RightRoomTop" type="StaticBody2D" parent="Walls"]
+position = Vector2(1500, 300)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RightRoomTop"]
+shape = SubResource("wall_long_h")
+
+[node name="Visual" type="ColorRect" parent="Walls/RightRoomTop"]
+offset_left = -250.0
+offset_top = -12.0
+offset_right = 250.0
+offset_bottom = 12.0
+color = Color(0.35, 0.3, 0.28, 1)
+
+[node name="RightRoomBot" type="StaticBody2D" parent="Walls"]
+position = Vector2(1400, 750)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RightRoomBot"]
+shape = SubResource("wall_med_h")
+
+[node name="Visual" type="ColorRect" parent="Walls/RightRoomBot"]
+offset_left = -150.0
+offset_top = -12.0
+offset_right = 150.0
+offset_bottom = 12.0
+color = Color(0.35, 0.3, 0.28, 1)
+
+[node name="RightRoomV" type="StaticBody2D" parent="Walls"]
+position = Vector2(1700, 520)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RightRoomV"]
+shape = SubResource("wall_short_v")
+
+[node name="Visual" type="ColorRect" parent="Walls/RightRoomV"]
+offset_left = -12.0
+offset_top = -60.0
+offset_right = 12.0
+offset_bottom = 60.0
+color = Color(0.35, 0.3, 0.28, 1)
+
+; === Pillars (furniture/cover inside rooms) ===
 [node name="Pillar1" type="StaticBody2D" parent="Walls"]
-position = Vector2(700, 300)
+position = Vector2(550, 200)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Pillar1"]
 shape = SubResource("pillar")
 
 [node name="Visual" type="ColorRect" parent="Walls/Pillar1"]
-offset_left = -30.0
-offset_top = -30.0
-offset_right = 30.0
-offset_bottom = 30.0
-color = Color(0.45, 0.45, 0.45, 1)
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.4, 0.35, 0.3, 1)
 
 [node name="Pillar2" type="StaticBody2D" parent="Walls"]
-position = Vector2(1200, 780)
+position = Vector2(970, 850)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Pillar2"]
 shape = SubResource("pillar")
 
 [node name="Visual" type="ColorRect" parent="Walls/Pillar2"]
-offset_left = -30.0
-offset_top = -30.0
-offset_right = 30.0
-offset_bottom = 30.0
-color = Color(0.45, 0.45, 0.45, 1)
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.4, 0.35, 0.3, 1)
 
-; === Corner covers ===
-[node name="CoverTopRight" type="StaticBody2D" parent="Walls"]
-position = Vector2(1500, 200)
+[node name="Pillar3" type="StaticBody2D" parent="Walls"]
+position = Vector2(1350, 540)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/CoverTopRight"]
-shape = SubResource("cover_h")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Pillar3"]
+shape = SubResource("pillar")
 
-[node name="Visual" type="ColorRect" parent="Walls/CoverTopRight"]
-offset_left = -80.0
-offset_top = -15.0
-offset_right = 80.0
-offset_bottom = 15.0
-color = Color(0.5, 0.5, 0.5, 1)
+[node name="Visual" type="ColorRect" parent="Walls/Pillar3"]
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.4, 0.35, 0.3, 1)
 
-[node name="CoverBottomLeft" type="StaticBody2D" parent="Walls"]
-position = Vector2(500, 850)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/CoverBottomLeft"]
-shape = SubResource("cover_v")
-
-[node name="Visual" type="ColorRect" parent="Walls/CoverBottomLeft"]
-offset_left = -15.0
-offset_top = -80.0
-offset_right = 15.0
-offset_bottom = 80.0
-color = Color(0.5, 0.5, 0.5, 1)
-
-[node name="CoverMidLeft" type="StaticBody2D" parent="Walls"]
-position = Vector2(200, 550)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/CoverMidLeft"]
-shape = SubResource("cover_h")
-
-[node name="Visual" type="ColorRect" parent="Walls/CoverMidLeft"]
-offset_left = -80.0
-offset_top = -15.0
-offset_right = 80.0
-offset_bottom = 15.0
-color = Color(0.5, 0.5, 0.5, 1)
-
-; === Targets ===
+; === Targets (enemies in different rooms) ===
 [node name="Targets" type="Node2D" parent="."]
 
 [node name="Dummy1" parent="Targets" instance=ExtResource("2")]
-position = Vector2(1400, 400)
+position = Vector2(1500, 500)
 
 [node name="Dummy2" parent="Targets" instance=ExtResource("2")]
-position = Vector2(1100, 900)
+position = Vector2(500, 900)
 
 [node name="Dummy3" parent="Targets" instance=ExtResource("2")]
-position = Vector2(600, 180)
+position = Vector2(970, 200)
 
 ; === UI ===
 [node name="DebugUI" type="CanvasLayer" parent="."]
