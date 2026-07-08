@@ -222,6 +222,15 @@ func _perform_attack() -> void:
 	if angle_diff > half_arc:
 		return
 
+	# Wall check
+	var space_state := get_world_2d().direct_space_state
+	var query := PhysicsRayQueryParameters2D.create(global_position, player.global_position)
+	query.collision_mask = 1
+	query.exclude = [get_rid()]
+	var hit := space_state.intersect_ray(query)
+	if not hit.is_empty():
+		return
+
 	if player.has_method("take_damage"):
 		var attack_dir := Vector2.RIGHT.rotated(rotation)
 		var player_facing := Vector2.RIGHT.rotated(player.rotation)

@@ -153,6 +153,8 @@ func _perform_attack() -> void:
 
 	var half_arc := deg_to_rad(attack_arc_deg) * 0.5
 
+	var space_state := get_world_2d().direct_space_state
+
 	for node in get_tree().get_nodes_in_group("targets"):
 		if node == self or not node is Node2D:
 			continue
@@ -163,6 +165,14 @@ func _perform_attack() -> void:
 
 		var attack_angle_diff := absf(wrapf(to_target.angle() - rotation, -PI, PI))
 		if attack_angle_diff > half_arc:
+			continue
+
+		# Wall check
+		var query := PhysicsRayQueryParameters2D.create(global_position, node.global_position)
+		query.collision_mask = 1
+		query.exclude = [get_rid()]
+		var hit := space_state.intersect_ray(query)
+		if not hit.is_empty():
 			continue
 
 		var damage := _calc_angle_damage(node)
